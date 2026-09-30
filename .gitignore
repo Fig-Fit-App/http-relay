@@ -3,4 +3,5 @@ node_modules/
 .DS_Store
 docs/build/
 docs/.docusaurus/
+packages/sdk/dist/
 *.log
