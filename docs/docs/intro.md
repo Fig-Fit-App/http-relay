@@ -1,3 +1,7 @@
+---
+slug: /
+---
+
 # Introduction
 
 `http-relay` is a small Bun + Hono service that proxies HTTPS requests. Use it when a caller cannot reach an upstream host directly (network restrictions, regional blocks, or a single egress point).

@@ -40,7 +40,13 @@ docker build -f docs/Dockerfile -t http-relay-docs docs
 ```
 
 Images are built and pushed to GHCR on `main` and `v*` tags via GitHub Actions.
-The SDK (`@figfit-oss/http-relay`) is built and published to npm (requires `NPM_TOKEN` secret).
+The SDK (`@figfit-oss/http-relay`) is **built** on every push/PR and **published to npm only on version tags** (`v0.1.0`, etc.). Requires repo secret `NPM_TOKEN`.
+
+```bash
+# cut a release
+git tag v0.1.0
+git push origin v0.1.0
+```
 
 ```bash
 cd packages/sdk

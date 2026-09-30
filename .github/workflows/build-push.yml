@@ -127,6 +127,13 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Publish skipped (not a version tag)
+        if: github.event_name != 'pull_request' && !startsWith(github.ref, 'refs/tags/v')
+        run: |
+          echo "npm publish/version-sync only run on tags like v0.1.0"
+          echo "Current ref: $GITHUB_REF"
+          echo "Create and push a tag: git tag v0.1.0 && git push origin v0.1.0"
+
       - name: Publish
         if: startsWith(github.ref, 'refs/tags/v')
         run: npm publish --access public --provenance
