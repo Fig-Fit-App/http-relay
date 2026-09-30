@@ -24,7 +24,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/figfit-oss/http-relay.git",
+    "url": "git+https://github.com/Fig-Fit-App/http-relay.git",
     "directory": "packages/sdk"
   },
   "devDependencies": {

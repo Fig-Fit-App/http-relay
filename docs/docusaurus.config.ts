@@ -10,7 +10,7 @@ const config: Config = {
   url: "https://docs.http-relay.local",
   baseUrl: "/",
 
-  organizationName: "figfit-oss",
+  organizationName: "Fig-Fit-App",
   projectName: "http-relay",
 
   onBrokenLinks: "throw",
@@ -59,7 +59,7 @@ const config: Config = {
     },
     footer: {
       style: "dark",
-      copyright: `Copyright © ${new Date().getFullYear()} figfit-oss`,
+      copyright: `Copyright © ${new Date().getFullYear()} Fig-Fit-App`,
     },
     prism: {
       theme: prismThemes.github,
