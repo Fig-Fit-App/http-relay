@@ -18,6 +18,7 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY package.json bun.lock tsconfig.json ./
 COPY apps/service ./apps/service
 COPY packages/sdk ./packages/sdk
+COPY --from=deps /app/apps/service/node_modules ./apps/service/node_modules
 
 EXPOSE 8787
 
