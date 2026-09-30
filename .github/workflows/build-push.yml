@@ -101,6 +101,9 @@ jobs:
   npm:
     name: npm
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
     defaults:
       run:
         working-directory: packages/sdk
@@ -114,6 +117,9 @@ jobs:
           node-version: "22"
           registry-url: https://registry.npmjs.org
           scope: "@figfit-oss"
+
+      - name: Ensure npm supports trusted publishing
+        run: npm install -g npm@latest
 
       - name: Sync version from tag
         if: startsWith(github.ref, 'refs/tags/v')
@@ -134,8 +140,9 @@ jobs:
           echo "Current ref: $GITHUB_REF"
           echo "Create and push a tag: git tag v0.1.0 && git push origin v0.1.0"
 
+      # OIDC trusted publishing — do not set NODE_AUTH_TOKEN
+      # Configure on npmjs.com → package → Trusted Publisher:
+      #   Organization/user: Fig-Fit-App, Repo: http-relay, Workflow: build-push.yml
       - name: Publish
         if: startsWith(github.ref, 'refs/tags/v')
         run: npm publish --access public --provenance
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
