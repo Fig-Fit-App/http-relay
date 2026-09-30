@@ -1,0 +1,17 @@
+{
+  "name": "http-relay",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": ["apps/*", "packages/*"],
+  "scripts": {
+    "dev": "bun run --filter @figfit-oss/http-relay-service dev",
+    "start": "bun run --filter @figfit-oss/http-relay-service start",
+    "docs:start": "bun run --cwd docs start",
+    "docs:build": "bun run --cwd docs build",
+    "typecheck": "bun run --filter '*' typecheck"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "typescript": "^5.9.3"
+  }
+}

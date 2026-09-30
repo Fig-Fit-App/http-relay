@@ -1,0 +1,10 @@
+node_modules
+.git
+.github
+.env
+.env.*
+docs
+*.md
+.DS_Store
+**/.docusaurus
+**/build
