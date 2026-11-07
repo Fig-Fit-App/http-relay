@@ -1,15 +1,27 @@
-# syntax=docker/dockerfile:1
-
-FROM node:22-alpine AS build
+FROM node:22-bookworm-slim AS build
 WORKDIR /app
-
 COPY package.json package-lock.json* ./
 RUN npm install
-
 COPY . .
 RUN npm run build
 
-FROM nginx:1.27-alpine AS runner
-COPY --from=build /app/build /usr/share/nginx/html
+FROM golang:1.25-alpine AS httpd
+WORKDIR /src
+COPY docker/httpd.go ./
+RUN go mod init httpd && CGO_ENABLED=0 go build -trimpath -ldflags="-s -w" -o /out/httpd .
+
+FROM debian:bookworm-slim AS caps
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends libcap2-bin \
+    && rm -rf /var/lib/apt/lists/*
+COPY --from=httpd /out/httpd /httpd
+RUN setcap cap_net_bind_service=+ep /httpd
+
+FROM gcr.io/distroless/static-debian12:nonroot
+COPY --from=caps /httpd /httpd
+COPY --from=build --chown=nonroot:nonroot /app/build /srv
+
+USER nonroot
+ENV PORT=80
 EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"]
+ENTRYPOINT ["/httpd"]
