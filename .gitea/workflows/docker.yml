@@ -18,15 +18,24 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Ensure Docker CLI
+        run: |
+          if command -v docker >/dev/null 2>&1; then
+            docker version
+            exit 0
+          fi
+          apt-get update -qq
+          apt-get install -y -qq --no-install-recommends docker.io
+          docker version
+
       - name: Build and push service image
         env:
           PACKAGE_TOKEN: ${{ secrets.PACKAGE_TOKEN || secrets.GITEA_TOKEN }}
-          SERVER_URL: ${{ gitea.server_url }}
+          REGISTRY_HOST: git.figfit.ir
           REPOSITORY: ${{ gitea.repository }}
           ACTOR: ${{ gitea.actor }}
           COMMIT_SHA: ${{ gitea.sha }}
         run: |
-          REGISTRY_HOST="${SERVER_URL#*://}"
           IMAGE="$REGISTRY_HOST/$(echo "$REPOSITORY" | tr '[:upper:]' '[:lower:]')/service"
           printf '%s' "$PACKAGE_TOKEN" | docker login "$REGISTRY_HOST" -u "$ACTOR" --password-stdin
           docker build -f apps/service/Dockerfile -t "$IMAGE:latest" -t "$IMAGE:$COMMIT_SHA" .
@@ -39,15 +48,24 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Ensure Docker CLI
+        run: |
+          if command -v docker >/dev/null 2>&1; then
+            docker version
+            exit 0
+          fi
+          apt-get update -qq
+          apt-get install -y -qq --no-install-recommends docker.io
+          docker version
+
       - name: Build and push docs image
         env:
           PACKAGE_TOKEN: ${{ secrets.PACKAGE_TOKEN || secrets.GITEA_TOKEN }}
-          SERVER_URL: ${{ gitea.server_url }}
+          REGISTRY_HOST: git.figfit.ir
           REPOSITORY: ${{ gitea.repository }}
           ACTOR: ${{ gitea.actor }}
           COMMIT_SHA: ${{ gitea.sha }}
         run: |
-          REGISTRY_HOST="${SERVER_URL#*://}"
           IMAGE="$REGISTRY_HOST/$(echo "$REPOSITORY" | tr '[:upper:]' '[:lower:]')/docs"
           printf '%s' "$PACKAGE_TOKEN" | docker login "$REGISTRY_HOST" -u "$ACTOR" --password-stdin
           docker build -f docs/Dockerfile -t "$IMAGE:latest" -t "$IMAGE:$COMMIT_SHA" docs
