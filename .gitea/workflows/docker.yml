@@ -4,9 +4,9 @@ on:
   push:
     branches: [main]
 
-# GITEA_TOKEN cannot publish packages. Create a personal access token
-# (Settings → Applications → Generate token, packages write) and store it
-# as the repository secret PACKAGE_TOKEN.
+# GITEA_TOKEN cannot publish packages. Create a personal access token with
+# "packages:write" for the "admin" user and store it as the repository secret
+# PACKAGE_TOKEN. The token owner must match REGISTRY_USER below.
 permissions:
   contents: read
   packages: write
@@ -33,11 +33,11 @@ jobs:
           PACKAGE_TOKEN: ${{ secrets.PACKAGE_TOKEN || secrets.GITEA_TOKEN }}
           REGISTRY_HOST: git.figfit.ir
           REPOSITORY: ${{ gitea.repository }}
-          ACTOR: ${{ gitea.actor }}
+          REGISTRY_USER: admin
           COMMIT_SHA: ${{ gitea.sha }}
         run: |
           IMAGE="$REGISTRY_HOST/$(echo "$REPOSITORY" | tr '[:upper:]' '[:lower:]')/service"
-          printf '%s' "$PACKAGE_TOKEN" | docker login "$REGISTRY_HOST" -u "$ACTOR" --password-stdin
+          printf '%s' "$PACKAGE_TOKEN" | docker login "$REGISTRY_HOST" -u "$REGISTRY_USER" --password-stdin
           docker build -f apps/service/Dockerfile -t "$IMAGE:latest" -t "$IMAGE:$COMMIT_SHA" .
           docker push "$IMAGE:latest"
           docker push "$IMAGE:$COMMIT_SHA"
@@ -63,11 +63,11 @@ jobs:
           PACKAGE_TOKEN: ${{ secrets.PACKAGE_TOKEN || secrets.GITEA_TOKEN }}
           REGISTRY_HOST: git.figfit.ir
           REPOSITORY: ${{ gitea.repository }}
-          ACTOR: ${{ gitea.actor }}
+          REGISTRY_USER: admin
           COMMIT_SHA: ${{ gitea.sha }}
         run: |
           IMAGE="$REGISTRY_HOST/$(echo "$REPOSITORY" | tr '[:upper:]' '[:lower:]')/docs"
-          printf '%s' "$PACKAGE_TOKEN" | docker login "$REGISTRY_HOST" -u "$ACTOR" --password-stdin
+          printf '%s' "$PACKAGE_TOKEN" | docker login "$REGISTRY_HOST" -u "$REGISTRY_USER" --password-stdin
           docker build -f docs/Dockerfile -t "$IMAGE:latest" -t "$IMAGE:$COMMIT_SHA" docs
           docker push "$IMAGE:latest"
           docker push "$IMAGE:$COMMIT_SHA"
