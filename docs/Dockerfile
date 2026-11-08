@@ -17,11 +17,11 @@ RUN apt-get update \
 COPY --from=httpd /out/httpd /httpd
 RUN setcap cap_net_bind_service=+ep /httpd
 
-FROM gcr.io/distroless/static-debian12:nonroot
+FROM debian:bookworm-slim
 COPY --from=caps /httpd /httpd
-COPY --from=build --chown=nonroot:nonroot /app/build /srv
+COPY --from=build --chown=65532:65532 /app/build /srv
 
-USER nonroot
+USER 65532:65532
 ENV PORT=80
 EXPOSE 80
 ENTRYPOINT ["/httpd"]
