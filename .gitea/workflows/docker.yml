@@ -6,7 +6,12 @@ on:
 
 # GITEA_TOKEN cannot publish packages. Create a personal access token with
 # "packages:write" for the "admin" user and store it as the repository secret
-# PACKAGE_TOKEN. The token owner must match REGISTRY_USER below.
+# PACKAGE_TOKEN. The token owner must match REGISTRY_USER (org/repo variable,
+# defaults to "admin").
+env:
+  # Required for Dockerfile features like RUN --mount=type=cache.
+  DOCKER_BUILDKIT: "1"
+
 permissions:
   contents: read
   packages: write
@@ -33,7 +38,7 @@ jobs:
           PACKAGE_TOKEN: ${{ secrets.PACKAGE_TOKEN || secrets.GITEA_TOKEN }}
           REGISTRY_HOST: git.figfit.ir
           REPOSITORY: ${{ gitea.repository }}
-          REGISTRY_USER: admin
+          REGISTRY_USER: ${{ vars.REGISTRY_USER || 'admin' }}
           COMMIT_SHA: ${{ gitea.sha }}
         run: |
           IMAGE="$REGISTRY_HOST/$(echo "$REPOSITORY" | tr '[:upper:]' '[:lower:]')/service"
@@ -63,7 +68,7 @@ jobs:
           PACKAGE_TOKEN: ${{ secrets.PACKAGE_TOKEN || secrets.GITEA_TOKEN }}
           REGISTRY_HOST: git.figfit.ir
           REPOSITORY: ${{ gitea.repository }}
-          REGISTRY_USER: admin
+          REGISTRY_USER: ${{ vars.REGISTRY_USER || 'admin' }}
           COMMIT_SHA: ${{ gitea.sha }}
         run: |
           IMAGE="$REGISTRY_HOST/$(echo "$REPOSITORY" | tr '[:upper:]' '[:lower:]')/docs"
