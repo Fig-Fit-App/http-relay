@@ -11,7 +11,10 @@ COPY docker/httpd.go ./
 RUN go mod init httpd && CGO_ENABLED=0 go build -trimpath -ldflags="-s -w" -o /out/httpd .
 
 FROM debian:bookworm-slim AS caps
-RUN apt-get update \
+# deb.debian.org is unreachable from Iran; use ArvanCloud's Debian mirror.
+RUN find /etc/apt -type f \( -name '*.list' -o -name '*.sources' \) \
+      -exec sed -i -E 's#https?://(deb|security)\.debian\.org#http://mirror.arvancloud.ir#g' {} + \
+    && apt-get update \
     && apt-get install -y --no-install-recommends libcap2-bin \
     && rm -rf /var/lib/apt/lists/*
 COPY --from=httpd /out/httpd /httpd
